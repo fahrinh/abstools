@@ -1,2 +1,6 @@
 /bin
 /gen
+
+#ignore Intellij IDEA project settings
+/.idea
+/*.iml
