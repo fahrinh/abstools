@@ -177,7 +177,17 @@ aspect GenerateGo {
 
 //  TODO
     public void InterfaceDecl.generateGo(PrintStream stream) {
-//        GoGeneratorHelper.generateHelpLine(this,stream);
+        GoGeneratorHelper.generateHelpLine(this,stream);
+        stream.print("type " + GoBackend.getGoName(this) + " interface");
+        stream.println(" {");
+        for (MethodSig s : getBodys()) {
+                      // Sync
+                    s.generateGo(stream, false);
+                    stream.println("");
+        }
+        stream.println("}");
+
+//        TODO: NEEDREVIEW
 //        stream.print("public interface " + GoBackend.getGoName(this) + " extends " + ABSInterface.class.getName());
 //        for (InterfaceTypeUse use : getExtendedInterfaceUses()) {
 //            String iname = GoBackend.getQualifiedString(((InterfaceType)use.getType()).getDecl());
@@ -196,20 +206,20 @@ aspect GenerateGo {
 //        stream.println("boolean __ABS_isSameCOG();");
 //        stream.println("}");
     }
-//
-//    public void MethodSig.generateGo(PrintStream stream) {
-//        generateGo(stream,false);
-//    }
-//
-//    public void MethodSig.generateGo(PrintStream stream, boolean async) {
-//        GoGeneratorHelper.generateMethodSig(stream,this,async);
-//    }
-//
+
+    public void MethodSig.generateGo(PrintStream stream) {
+        generateGo(stream,false);
+    }
+
+    public void MethodSig.generateGo(PrintStream stream, boolean async) {
+        GoGeneratorHelper.generateMethodSig(stream,this,async);
+    }
+
     public void ParamDecl.generateGo(PrintStream stream) {
         stream.print(GoBackend.getVariableName(getName()) + " ");
         getAccess().generateGo(stream);
     }
-//
+
 //  TODO
     public void ClassDecl.generateGo(PrintStream stream) {
         GoGeneratorHelper.generateClassDecl(stream,this);

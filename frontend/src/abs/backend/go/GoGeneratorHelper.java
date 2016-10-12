@@ -4,20 +4,20 @@
  */
 package abs.backend.go;
 
-import abs.backend.common.CodeStream;
-import abs.common.CompilerUtils;
 import abs.common.Constants;
 import abs.common.NotImplementedYetException;
 import abs.frontend.ast.*;
-import abs.frontend.ast.AsyncCall;
 import abs.frontend.typechecker.Type;
 
-import java.io.*;
-import java.lang.reflect.Method;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.OutputStream;
+import java.io.PrintStream;
 
 public class GoGeneratorHelper {
 
     private static final String FLI_METHOD_PREFIX = "fli_";
+    private static long tempCounter = 0;
 
     public static void generateHelpLine(ASTNode<?> node, PrintStream stream) {
         stream.println("// " + node.getPositionString());
@@ -171,9 +171,15 @@ public class GoGeneratorHelper {
 
     public static void generateMethodSig(PrintStream stream, MethodSig sig, boolean async, String modifier, String prefix) {
         GoGeneratorHelper.generateHelpLine(sig, stream);
-        stream.print("func " + modifier);
-        String declName = sig.getContextDecl().getName();
-        stream.print("(" + GoBackend.getReceiverName(declName) + " *" + GoBackend.getClassName(declName) + ") ");
+
+        boolean isClassDecl = sig.getContextDecl() instanceof ClassDecl;
+
+        if (isClassDecl) {
+            stream.print("func " + modifier);
+            String declName = sig.getContextDecl().getName();
+            stream.print("(" + GoBackend.getReceiverName(declName) + " *" + GoBackend.getClassName(declName) + ") ");
+        }
+
         if (async) {
             prefix = "async_";
 //            TODO
@@ -200,7 +206,6 @@ public class GoGeneratorHelper {
         stream.println(";");
         stream.println("}");
     }
-
 
     public static void generateAsyncCall(PrintStream stream, AsyncCall call) {
         final PureExp callee = call.getCallee();
@@ -287,7 +292,7 @@ public class GoGeneratorHelper {
 //        OutputStream exprOStream = new ByteArrayOutputStream();
 //        PrintStream exprStream = new PrintStream(exprOStream);
 //        ClaimGuard guard = new ClaimGuard();
-//        // Necessary temporary variables are written to "stream" and the 
+//        // Necessary temporary variables are written to "stream" and the
 //        // await-expression is written to exprStream
 //
 //        // FIXME: implement await, assignment afterwards
@@ -298,7 +303,6 @@ public class GoGeneratorHelper {
 
         generateAsyncCall(stream, null, callee, callee.getType(), params, null, sig, annotations);
     }
-
 
     private static void generateTaskInitMethod(PrintStream stream, final java.util.List<Type> paramTypes) {
         int i;
@@ -332,7 +336,6 @@ public class GoGeneratorHelper {
             stream.print("arg" + i);
         }
     }
-
 
     public static void generateClassDecl(PrintStream stream, final ClassDecl decl) {
         new ClassDeclGenerator(stream, decl).generate();
@@ -465,7 +468,7 @@ public class GoGeneratorHelper {
 
     /**
      * replace all uses of local variables and parameters by a use of a newly introduced
-     * temporary final local variable 
+     * temporary final local variable
      */
     private static void replaceLocalVariables(ASTNode<?> astNode, PrintStream beforeAwaitStream) {
         if (isLocalVarUse(astNode)) {
@@ -493,9 +496,6 @@ public class GoGeneratorHelper {
         }
         return false;
     }
-
-
-    private static long tempCounter = 0;
 
     /**
      * replaces a varUse v of the local variable vDecl by a new temporary variable, which will be
