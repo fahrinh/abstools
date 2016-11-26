@@ -28,7 +28,7 @@ public class GoGeneratorHelper {
     }
 
     public static void generateArgs(PrintStream stream, String firstArg, List<PureExp> args, java.util.List<Type> types) {
-        stream.print("(");
+        stream.print("{");
         boolean first = true;
 
         if (firstArg != null) {
@@ -36,16 +36,16 @@ public class GoGeneratorHelper {
             first = false;
         }
 //        TODO
-//        for (int i = 0; i < args.getNumChild(); i++) {
-//            PureExp e = args.getChild(i);
-//            if (!first)
-//                stream.print(", ");
-//            e.generateGo(stream);
+        for (int i = 0; i < args.getNumChild(); i++) {
+            PureExp e = args.getChild(i);
+            if (!first)
+                stream.print(", ");
+            e.generateGo(stream);
 //            if (types.get(i).isIntType() && e.getType().isRatType())
 //                stream.print(".truncate()");
-//            first = false;
-//        }
-        stream.print(")");
+            first = false;
+        }
+        stream.print("}");
     }
 
     public static void generateParamArgs(PrintStream stream, List<ParamDecl> params) {
