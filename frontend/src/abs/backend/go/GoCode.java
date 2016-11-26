@@ -46,41 +46,6 @@ public class GoCode {
         return new Package(packageName, false);
     }
 
-    public class Package {
-        public final boolean isMainPackage;
-        public final String packageName;
-        public final File packageDir;
-        private String firstPackagePart;
-
-        public Package(String packageName, boolean isMainPackage) {
-            this.isMainPackage = isMainPackage;
-            this.packageName = packageName;
-            this.packageDir = new File(srcDir, isMainPackage ? "" : packageName.replace('.', File.separatorChar));
-//            this.firstPackagePart = packageName.split("\\.")[0];
-            packageDir.mkdirs();
-        }
-
-        public File createGoFile(String name) throws IOException, GoCodeGenerationException {
-//            if (name.equals(firstPackagePart)) {
-//                if (name.equals("Main")) {
-//                    throw new GoCodeGenerationException("The Go backend does not support main blocks in " +
-//                    		"modules with name 'Main'. Please try to use a different name.");
-//                }
-//                throw new GoCodeGenerationException("The Go backend does not support using the name " +
-//                      name + " as module name, because it collides with a generated classname. " +
-//                      		"Please try to use a different name.");
-//            }
-            File file = new File(packageDir, name + ".go");
-            addFile(file);
-            file.createNewFile();
-            return file;
-        }
-
-        public void addMainClass(String s) {
-            mainClasses.add((isMainPackage ? "" : packageName + ".") + s);
-        }
-    }
-
     public File getSrcDir() {
         return srcDir;
     }
@@ -115,6 +80,11 @@ public class GoCode {
         abs.backend.go.GoCompiler.compile(args2.toArray(new String[0]));
     }
 
+    public void prettyFormat() throws IOException, InterruptedException {
+        Process versionCheck = Runtime.getRuntime().exec(new String[]{"gofmt", "-s", "-w", srcDir.getAbsolutePath()});
+        versionCheck.waitFor();
+    }
+
     public String getFirstMainClass() {
         if (mainClasses.isEmpty())
             throw new IllegalStateException("There is no main class");
@@ -144,6 +114,41 @@ public class GoCode {
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
+        }
+    }
+
+    public class Package {
+        public final boolean isMainPackage;
+        public final String packageName;
+        public final File packageDir;
+        private String firstPackagePart;
+
+        public Package(String packageName, boolean isMainPackage) {
+            this.isMainPackage = isMainPackage;
+            this.packageName = packageName;
+            this.packageDir = new File(srcDir, isMainPackage ? "" : packageName.replace('.', File.separatorChar));
+//            this.firstPackagePart = packageName.split("\\.")[0];
+            packageDir.mkdirs();
+        }
+
+        public File createGoFile(String name) throws IOException, GoCodeGenerationException {
+//            if (name.equals(firstPackagePart)) {
+//                if (name.equals("Main")) {
+//                    throw new GoCodeGenerationException("The Go backend does not support main blocks in " +
+//                    		"modules with name 'Main'. Please try to use a different name.");
+//                }
+//                throw new GoCodeGenerationException("The Go backend does not support using the name " +
+//                      name + " as module name, because it collides with a generated classname. " +
+//                      		"Please try to use a different name.");
+//            }
+            File file = new File(packageDir, name + ".go");
+            addFile(file);
+            file.createNewFile();
+            return file;
+        }
+
+        public void addMainClass(String s) {
+            mainClasses.add((isMainPackage ? "" : packageName + ".") + s);
         }
     }
 
