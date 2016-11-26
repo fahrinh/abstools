@@ -1,16 +1,13 @@
-import java.io.*;
-
-import abs.backend.common.CodeStream;
-import abs.backend.go.*;
-import abs.frontend.ast.*;
-
-aspect GenerateGo {
+aspect GenerateGo{
 
 //    public boolean Model.includeDebug = true; TODO
 
     public void Model.generateGoCode(GoCode code) throws IOException, GoCodeGenerationException {
         GoGeneratorHelper.cleanGenFolder(code);
         for (ModuleDecl decl : getModuleDecls()) {
+
+        if(Constants.BUILT_IN_LIBS.contains(decl.getName())||"ABS.SmartDeploy".equals(decl.getName()))continue;
+
             try {
                 decl.generateGoCode(code);
             } catch (NotImplementedYetException e) { 
@@ -368,19 +365,19 @@ aspect GenerateGo {
     }
 //  TODO
     public void VarDecl.generateGo(PrintStream stream) {
-//        getAccess().generateGo(stream);
-//        String name = GoBackend.getVariableName(getName());
-//        stream.print(" " + name + " = ");
-//
-//        if (hasInitExp()) {
-//            getInitExp().generateGo(stream);
+        //getAccess().generateGo(stream);
+        String name=GoBackend.getVariableName(getName());
+        stream.print(" "+name+" := ");
+
+        if(hasInitExp()){
+        getInitExp().generateGo(stream);
 //            if (getType().isIntType() && getInitExp().getType().isRatType()) {
 //                stream.print(".truncate()");
 //            }
-//        } else {
-//            stream.print("null");
-//        }
-//        stream.println(";");
+        }else{
+        stream.print("nil");
+        }
+        stream.println("");
 //        if (getModel().includeDebug) {
 //            stream.print("if (__ABS_getRuntime().debuggingEnabled()) ");
 //            stream.print("__ABS_getRuntime().getCurrentTask().setLocalVariable(\"" + getName() + "\"," + name + ");");
@@ -405,7 +402,7 @@ aspect GenerateGo {
         getVarDecl().generateGo(stream);
         stream.println();
     }
-//
+
     public void AssignStmt.generateGo(PrintStream stream) {
         super.generateGo(stream);
         getVar().generateGo(stream);
@@ -604,9 +601,9 @@ aspect GenerateGo {
     }
 //
     public void NewExp.generateGo(PrintStream stream) {
-//        ClassDecl decl = ((UnionType)getType()).getOriginatingClass();
-//        String className = GoBackend.getQualifiedString(decl);
-//
+        ClassDecl decl=((UnionType)getType()).getOriginatingClass();
+        String className=GoBackend.getQualifiedString(decl);
+
 //        if (!hasLocal()) {
 //            String strategy = null;
 //            PureExp scheduler = getInheritedAnnotationValue("Scheduler");
@@ -622,11 +619,13 @@ aspect GenerateGo {
 //                strategy = GoGeneratorHelper.generateUserSchedulingStrategy(this, scheduler);
 //            }
 //            stream.print(className + ".__ABS_createNewCOG");
+        stream.print("&"+className);
 //
 //            if (strategy != null)
 //                GoGeneratorHelper.generateArgs(stream, "this, new " + strategy + "(), " + dc_exp, getParams(), decl.getTypes());
 //            else
 //                GoGeneratorHelper.generateArgs(stream, "this, null, " + dc_exp, getParams(), decl.getTypes());
+        GoGeneratorHelper.generateArgs(stream,null,getParams(),decl.getTypes());
 //
 //        } else {
 //            stream.print(className + ".__ABS_createNewObject");
