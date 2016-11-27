@@ -57,9 +57,8 @@ aspect GenerateGo{
             try {
                 stream = new CodeStream(file);
                 stream.println("package " + generatedGoMainPackage.packageName);
-                stream.println("import \"" + packageName + "\"");
+                GoGeneratorHelper.generateImportForMain(stream, this);
                 stream.println("");
-                //s.println(GoBackendConstants.LIB_IMPORT_STATEMENT); TODO
 
                 stream.println("func main() {");
                 block.generateGo(stream);
@@ -81,7 +80,8 @@ aspect GenerateGo{
             File file = pkg.createGoFile(name);
             s = new CodeStream(file);
             s.println("package " + pkg.packageName);
-            //s.println(GoBackendConstants.LIB_IMPORT_STATEMENT); TODO
+            GoGeneratorHelper.generateImport(s, getModuleDecl(), pkg);
+            s.println("");
             generateGo(s);
         } finally {
             if (s != null)

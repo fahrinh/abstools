@@ -25,7 +25,8 @@ public class GoBackend extends Main {
             "synchronized", "continue", "if", "private", "this", "default", "implements", "protected", "throw",
             "const", "goto", "null", "true", "false", "abs"};
     private static final Set<String> JAVA_RESERVED_WORDS = new HashSet<String>();
-    private File destDir = new File("gen/");
+    private File destDir;
+    public static String DEST_PACKAGE;
     private boolean sourceOnly = false;
     private boolean omitDebug = false;
 
@@ -299,15 +300,20 @@ public class GoBackend extends Main {
         List<String> restArgs = super.parseArgs(args);
         List<String> remainingArgs = new ArrayList<String>();
 
+        String goPath = System.getenv("GOPATH");
+        if(goPath == null || !new File(goPath).isDirectory()) {
+            System.err.println("Please set GOPATH environment variable!");
+            System.exit(1);
+        }
+
         for (int i = 0; i < restArgs.size(); i++) {
             String arg = restArgs.get(i);
             if (arg.equals("-d")) {
                 i++;
-                if (i == restArgs.size()) {
-                    System.err.println("Please provide a destination directory");
-                    System.exit(1);
-                } else {
-                    destDir = new File(args[++i]);
+                if (i < restArgs.size()) {
+                    DEST_PACKAGE = args[++i];
+                    File goPathSrc = new File(goPath, "src");
+                    destDir = new File(goPathSrc, DEST_PACKAGE);
                 }
             } else if (arg.equals("-sourceonly")) {
                 this.sourceOnly = true;
@@ -319,13 +325,19 @@ public class GoBackend extends Main {
                 remainingArgs.add(arg);
             }
         }
+
+        if (DEST_PACKAGE == null) {
+            System.err.println("Please provide a destination package!\nThis package directory will be created inside GOPATH/src along with generated source code.");
+            System.exit(1);
+        }
+
         return remainingArgs;
     }
 
     protected void printUsage() {
         super.printUsage();
         System.out.println("Go Backend:\n"
-                + "  -d <dir>       generate files to <dir>\n"
+                + "  -d <dir>       generate files to GOPATH/src/<dir>\n"
                 + "  -debug         print stacktrace on exception\n"
                 + "  -sourceonly    do not generate class files\n");
     }

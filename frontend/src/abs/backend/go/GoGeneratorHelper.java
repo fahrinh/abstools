@@ -591,4 +591,42 @@ public class GoGeneratorHelper {
         return null;
     }
 
+    public static void generateImportForMain(PrintStream stream, ModuleDecl moduleDecl) {
+        generateImport(stream, moduleDecl, null);
+    }
+
+    public static void generateImport(PrintStream stream, ModuleDecl moduleDecl, GoCode.Package declPackage) {
+        boolean isMainPackage = (declPackage == null);
+
+        stream.println("import (");
+
+        if (isMainPackage) {
+            String packageName = moduleDecl.getName().toLowerCase();
+            stream.println("\"" + getFullImportPathPackage(packageName) + "\"");
+        }
+
+        for (Import anImport : moduleDecl.getImports()) {
+            String moduleName = null;
+            if (anImport instanceof FromImport) moduleName = ((FromImport) anImport).getModuleName();
+            else if (anImport instanceof FromImport) moduleName = ((StarImport) anImport).getModuleName();
+
+            if (moduleName == null) continue;
+            if(!isMainPackage) {
+                if (moduleName.toLowerCase().equals(declPackage.packageName))
+                    continue;
+            }
+
+            stream.println("\"" + getFullImportPathPackage(moduleName.toLowerCase()) + "\"");
+        }
+
+        stream.println(")");
+    }
+
+    private static String getFullImportPathPackage(String packageName) {
+        boolean existTrailSlash = GoBackend.DEST_PACKAGE.endsWith("/");
+
+        String fullPathPackage = GoBackend.DEST_PACKAGE + (existTrailSlash ? "" : "/") + packageName;
+        return fullPathPackage;
+    }
+
 }
