@@ -566,27 +566,27 @@ aspect GenerateGo{
     }
 //
     public void SyncCall.generateGo(PrintStream stream) {
-//        PureExp callee = getCallee();
-//        final List<PureExp> params = getParams();
-//        if (callee instanceof ThisExp) {
-//            stream.print(GoBackend.getMethodName(getMethod()));
-//            GoGeneratorHelper.generateArgs(stream,params,getMethodSig().getTypes());
-//        } else {
+        PureExp callee = getCallee();
+        final List<PureExp> params = getParams();
+        if (callee instanceof ThisExp) {
+            stream.print(GoBackend.getMethodName(getMethod()));
+            GoGeneratorHelper.generateArgs(stream,params,getMethodSig().getTypes());
+        } else {
 //            stream.print(ABSRuntime.class.getName() + ".checkForNull(");
 //            callee.generateGo(stream);
 //            stream.print(").__ABS_isSameCOG() ? ");
-//            // synchronous method call
-//            callee.generateGo(stream);
-//            stream.print("." + GoBackend.getMethodName(getMethod()));
-//            GoGeneratorHelper.generateArgs(stream,params,getMethodSig().getTypes());
+            // synchronous method call
+            callee.generateGo(stream);
+            stream.print("." + GoBackend.getMethodName(getMethod()));
+            GoGeneratorHelper.generateArgs(stream,params,getMethodSig().getTypes());
 //            stream.print(" : ");
-//            // asynchronous method call + get
+            // asynchronous method call + get
 //            callee.generateGo(stream);
 //            stream.print(".async_" + GoBackend.getMethodName(getMethod()));
 //            GoGeneratorHelper.generateArgs(stream,params,getMethodSig().getTypes());
 //            stream.print(".get()");
-//        }
-//
+        }
+
     }
 //
     public void OriginalCall.generateGo(PrintStream stream) {
@@ -633,7 +633,7 @@ aspect GenerateGo{
 //                GoGeneratorHelper.generateArgs(stream, "this, new " + strategy + "(), " + dc_exp, getParams(), decl.getTypes());
 //            else
 //                GoGeneratorHelper.generateArgs(stream, "this, null, " + dc_exp, getParams(), decl.getTypes());
-        GoGeneratorHelper.generateArgs(stream,decl,getParams());
+        GoGeneratorHelper.generateNewExpArgs(stream,decl,getParams());
 //
 //        } else {
 //            stream.print(className + ".__ABS_createNewObject");

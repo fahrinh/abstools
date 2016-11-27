@@ -30,7 +30,7 @@ public class GoGeneratorHelper {
     }
 
     public static void generateArgs(PrintStream stream, String firstArg, List<PureExp> args, java.util.List<Type> types) {
-        stream.print("{");
+        stream.print("(");
         boolean first = true;
 
         if (firstArg != null) {
@@ -47,10 +47,10 @@ public class GoGeneratorHelper {
 //                stream.print(".truncate()");
             first = false;
         }
-        stream.print("}");
+        stream.print(")");
     }
 
-    public static void generateArgs(PrintStream stream, ClassDecl classDecl, List<PureExp> args) {
+    public static void generateNewExpArgs(PrintStream stream, ClassDecl classDecl, List<PureExp> args) {
         stream.print("{");
         boolean first = true;
 
