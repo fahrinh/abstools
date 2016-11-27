@@ -239,14 +239,13 @@ aspect GenerateGo{
         GoGeneratorHelper.generateMethodImpl(stream, this);
     }
 //
-//    public void FieldDecl.generateGo(PrintStream stream) {
-//        GoGeneratorHelper.generateHelpLine(this,stream);
-//        stream.print("private ");
-//        getAccess().generateGo(stream);
-//        stream.print(" ");
-//        stream.print(GoBackend.getVariableName(getName()));
-//        stream.println(";");
-//    }
+    public void FieldDecl.generateGo(PrintStream stream) {
+        GoGeneratorHelper.generateHelpLine(this,stream);
+        stream.print(GoBackend.getVariableName(getName()));
+        stream.print(" ");
+        getAccess().generateGo(stream);
+        stream.println("");
+    }
 //
 //  TODO
     public void DataTypeDecl.generateGo(PrintStream stream) {

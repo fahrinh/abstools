@@ -191,7 +191,7 @@ public class ClassDeclGenerator {
         }
 
         for (FieldDecl f : decl.getFields()) {
-            f.generateJava(stream);
+            f.generateGo(stream);
         }
     }
 
