@@ -7,7 +7,9 @@ package abs.backend.go;
 import abs.common.Constants;
 import abs.common.NotImplementedYetException;
 import abs.frontend.ast.*;
+import abs.frontend.typechecker.DataTypeType;
 import abs.frontend.typechecker.Type;
+import abs.frontend.typechecker.UnionType;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -47,6 +49,26 @@ public class GoGeneratorHelper {
         }
         stream.print("}");
     }
+
+    public static void generateArgs(PrintStream stream, ClassDecl classDecl, List<PureExp> args) {
+        stream.print("{");
+        boolean first = true;
+
+        for (int i = 0; i < args.getNumChild(); i++) {
+            PureExp e = args.getChild(i);
+            ParamDecl paramDecl = classDecl.getParams().getChild(i);
+
+            if (!first)
+                stream.print(", ");
+
+            stream.print(GoBackend.getVariableNameUpperCamel(paramDecl.getName()) + ":");
+            e.generateGo(stream);
+
+            first = false;
+        }
+        stream.print("}");
+    }
+
 
     public static void generateParamArgs(PrintStream stream, List<ParamDecl> params) {
         generateParamArgs(stream, null, params);
@@ -397,6 +419,7 @@ public class GoGeneratorHelper {
 
     /**
      * removes the gen folder and all its contents
+     *
      * @param code
      */
     public static void cleanGenFolder(GoCode code) {
@@ -499,7 +522,7 @@ public class GoGeneratorHelper {
 
     /**
      * replaces a varUse v of the local variable vDecl by a new temporary variable, which will be
-     * written to beforeAwaitStream      
+     * written to beforeAwaitStream
      */
     private static void replaceVarUse(PrintStream beforeAwaitStream, VarUse v, TypedVarOrFieldDecl vDecl) {
         String name = GoBackend.getVariableName(vDecl.getName());

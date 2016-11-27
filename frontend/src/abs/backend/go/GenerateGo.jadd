@@ -1,3 +1,9 @@
+import java.io.*;
+
+import abs.backend.common.CodeStream;
+import abs.backend.go.*;
+import abs.frontend.ast.*;
+
 aspect GenerateGo{
 
 //    public boolean Model.includeDebug = true; TODO
@@ -51,6 +57,9 @@ aspect GenerateGo{
             try {
                 stream = new CodeStream(file);
                 stream.println("package " + generatedGoMainPackage.packageName);
+                stream.println("import \"" + packageName + "\"");
+                stream.println("");
+                //s.println(GoBackendConstants.LIB_IMPORT_STATEMENT); TODO
 
                 stream.println("func main() {");
                 block.generateGo(stream);
@@ -625,7 +634,7 @@ aspect GenerateGo{
 //                GoGeneratorHelper.generateArgs(stream, "this, new " + strategy + "(), " + dc_exp, getParams(), decl.getTypes());
 //            else
 //                GoGeneratorHelper.generateArgs(stream, "this, null, " + dc_exp, getParams(), decl.getTypes());
-        GoGeneratorHelper.generateArgs(stream,null,getParams(),decl.getTypes());
+        GoGeneratorHelper.generateArgs(stream,decl,getParams());
 //
 //        } else {
 //            stream.print(className + ".__ABS_createNewObject");
