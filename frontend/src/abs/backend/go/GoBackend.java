@@ -307,7 +307,7 @@ public class GoBackend extends Main {
                     System.err.println("Please provide a destination directory");
                     System.exit(1);
                 } else {
-                    destDir = new File(args[i]);
+                    destDir = new File(args[++i]);
                 }
             } else if (arg.equals("-sourceonly")) {
                 this.sourceOnly = true;
