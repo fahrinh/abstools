@@ -499,11 +499,11 @@ aspect GenerateGo{
     }
 //
     public void WhileStmt.generateGo(PrintStream stream) {
-//        super.generateGo(stream);
-//        stream.print("while (");
-//        getCondition().generateGo(stream);
+        super.generateGo(stream);
+        stream.print("for ");
+        getCondition().generateGo(stream);
 //        stream.print(".toBoolean())");
-//        getBody().generateGo(stream);
+        getBody().generateGo(stream);
     }
 //
     public void AssertStmt.generateGo(PrintStream stream) {
