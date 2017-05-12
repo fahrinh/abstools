@@ -272,47 +272,49 @@ aspect GenerateGo{
 //
 //  TODO
     public void FunctionDecl.generateGo(PrintStream stream) {
-//        if (getFunctionDef() instanceof BuiltinFunctionDef)
-//            return;
-//
+        if (getFunctionDef() instanceof BuiltinFunctionDef)
+            return;
+
 //        boolean needsTruncate = getType().isIntType()
 //            && getFunctionDef() instanceof ExpFunctionDef
 //            && ((ExpFunctionDef) getFunctionDef()).getRhs().getType().isRatType() ;
-//
-//        GoGeneratorHelper.generateHelpLine(this,stream);
-//
-//        String className = GoBackend.getFunctionName(getName());
+
+        GoGeneratorHelper.generateHelpLine(this,stream);
+
+        String className = GoBackend.getFunctionName(getName());
 //        stream.print("public final class " + className);
 //        stream.println(" implements " + ABSFunction.class.getName() + " {");
 //        stream.println("private " + className + "() { }");
-//        stream.print("public static ");
-//        GoGeneratorHelper.generateTypeParameters(stream,this, true);
-//
-//        getTypeUse().generateGo(stream);
+        stream.print("func ");
 //        stream.print(" apply");
-//        GoGeneratorHelper.generateParams(stream,getParams());
-//        stream.println(" {");
-//        stream.print("return (");
-//        getFunctionDef().generateGo(stream);
-//        stream.print(")");
+        stream.print(" " + className);
+        GoGeneratorHelper.generateParams(stream,getParams());
+
+        GoGeneratorHelper.generateTypeParameters(stream,this, true);
+        getTypeUse().generateGo(stream);
+
+        stream.println(" {");
+        stream.print("return (");
+        getFunctionDef().generateGo(stream);
+        stream.print(")");
 //        if (needsTruncate) {
 //            stream.print(".truncate()");
 //        }
 //        stream.println(";");
-//        stream.println("}");
+        stream.println("}");
 //        stream.println("}");
     }
-//
-//    public void FunctionDef.generateGo(PrintStream stream) { }
-//
-//    public void ExpFunctionDef.generateGo(PrintStream stream) {
-//        getRhs().generateGo(stream);
-//    }
-//
-//    public void BuiltinFunctionDef.generateGo(PrintStream stream) {
-//        stream.print("null");
-//    }
-//
+
+    public void FunctionDef.generateGo(PrintStream stream) { }
+
+    public void ExpFunctionDef.generateGo(PrintStream stream) {
+        getRhs().generateGo(stream);
+    }
+
+    public void BuiltinFunctionDef.generateGo(PrintStream stream) {
+        stream.print("nil");
+    }
+
     public void TypeParameterDecl.generateGo(PrintStream stream) {
         // is never called
     }
@@ -775,50 +777,50 @@ aspect GenerateGo{
 //    }
 //
     public void FnApp.generateGo(PrintStream stream) {
-//
-//        // Have to explicitly type the call due to a bug in the JastAdd Go
-//        // compiler that generates wrong code otherwise.
-//        FunctionDecl d = (FunctionDecl)getDecl();
-//
-//
-//        if (d.getFunctionDef() instanceof BuiltinFunctionDef) {
-//            GoGeneratorHelper.generateBuiltInFnApp(stream,this);
-//            return;
-//        }
-//
-//        stream.print(GoBackend.getQualifiedString(d) + ".");
-//        Type declaredResultType = d.getTypeUse().getType();
-//        if (d instanceof ParametricFunctionDecl) {
-//            ParametricFunctionDecl funDecl = (ParametricFunctionDecl) d;
-//            Map<TypeParameter, Type> typeBinding = getTypeParamBindingFromParamDecl(funDecl);
-//
-//            /*
-//         StringBuffer buf = new StringBuffer();
-//         buf.append("<");
-//         boolean first = true;
-//         for (TypeParameterDecl tp : funDecl.getTypeParameters()) {
-//             Type t = typeBinding.get((TypeParameter)tp.getType());
-//             if (first) first = false;
-//             else buf.append(",");
-//             if (t == null) {
-//                 buf = null;
-//                 break;
-//             } else if (t.isBoundedType() && !((BoundedType)t).hasBoundType()) {
-//                 buf = null;
-//                 break;
-//             } else {
-//                 buf.append(GoBackend.getQualifiedString(t));
-//             }
-//         }
-//
-//         if (buf != null) {
-//             stream.print(buf.toString());
-//             stream.print(">");
-//         }*/
-//        }
-//
+
+        // Have to explicitly type the call due to a bug in the JastAdd Go
+        // compiler that generates wrong code otherwise.
+        FunctionDecl d = (FunctionDecl)getDecl();
+
+
+        if (d.getFunctionDef() instanceof BuiltinFunctionDef) {
+            GoGeneratorHelper.generateBuiltInFnApp(stream,this);
+            return;
+        }
+
+        stream.print(GoBackend.getQualifiedString(d));
+        Type declaredResultType = d.getTypeUse().getType();
+        if (d instanceof ParametricFunctionDecl) {
+            ParametricFunctionDecl funDecl = (ParametricFunctionDecl) d;
+            Map<TypeParameter, Type> typeBinding = getTypeParamBindingFromParamDecl(funDecl);
+
+            /*
+         StringBuffer buf = new StringBuffer();
+         buf.append("<");
+         boolean first = true;
+         for (TypeParameterDecl tp : funDecl.getTypeParameters()) {
+             Type t = typeBinding.get((TypeParameter)tp.getType());
+             if (first) first = false;
+             else buf.append(",");
+             if (t == null) {
+                 buf = null;
+                 break;
+             } else if (t.isBoundedType() && !((BoundedType)t).hasBoundType()) {
+                 buf = null;
+                 break;
+             } else {
+                 buf.append(GoBackend.getQualifiedString(t));
+             }
+         }
+
+         if (buf != null) {
+             stream.print(buf.toString());
+             stream.print(">");
+         }*/
+        }
+
 //        stream.print("apply");
-//        GoGeneratorHelper.generateArgs(stream,getParams(), d.getTypes());
+        GoGeneratorHelper.generateArgs(stream,getParams(), d.getTypes());
     }
 
 //    TODO
@@ -906,7 +908,9 @@ aspect GenerateGo{
     public void StringLiteral.generateGo(PrintStream stream) {
 //        stream.print(ABSString.class.getName());
 //        stream.print(".fromString(\"");
+        stream.print("\"");
         GoGeneratorHelper.printEscapedString(stream, getContent());
+        stream.print("\"");
 //        stream.print("\")");
     }
 
