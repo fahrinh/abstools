@@ -209,7 +209,7 @@ public class GoBackend extends Main {
     }
 
     public static String getFunctionName(String name) {
-        return truncate(escapeReservedWords(name) + "_f");
+        return CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, truncate(escapeReservedWords(name) + "_f"));
     }
 
     public static String getMethodName(String name) {
