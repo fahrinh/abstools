@@ -903,7 +903,6 @@ aspect GenerateGo{
 //        stream.print(")");
     }
 
-//    TODO
     public void IntLiteral.generateGo(PrintStream stream) {
 //        stream.print(ABSInteger.class.getName());
 //        stream.print(".fromString(\"");
@@ -911,7 +910,6 @@ aspect GenerateGo{
 //        stream.print("\")");
     }
 
-//    TODO
     public void StringLiteral.generateGo(PrintStream stream) {
 //        stream.print(ABSString.class.getName());
 //        stream.print(".fromString(\"");
@@ -921,17 +919,14 @@ aspect GenerateGo{
 //        stream.print("\")");
     }
 
-//    TODO
     public void NullExp.generateGo(PrintStream stream) {
-//        stream.print("null");
+        stream.print("nil");
     }
 
-//  TODO
     public void ThisExp.generateGo(PrintStream stream) {
 //        stream.print("this");
     }
 
-//  TODO
     public void MinusExp.generateGo(PrintStream stream) {
         getOperand().generateGo(stream);
         stream.print("-");
