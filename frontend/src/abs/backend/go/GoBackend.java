@@ -157,7 +157,11 @@ public class GoBackend extends Main {
     }
 
     public static String getQualifiedString(Decl decl) {
-        return decl.getModuleDecl().getName().toLowerCase() + "." + getGoName(decl);
+        return getQualifiedString(decl, false);
+    }
+
+    public static String getQualifiedString(Decl decl, boolean isConstructor) {
+        return decl.getModuleDecl().getName().toLowerCase() + "." + (isConstructor ? "New" : "") + getGoName(decl);
     }
 
     public static String getConstructorName(DataTypeDecl dataType, String name) {
