@@ -190,8 +190,10 @@ public class ClassDeclGenerator {
             stream.println();
         }
 
-        for (FieldDecl f : decl.getFields()) {
-            f.generateGo(stream);
+        for(FieldDecl f:decl.getFields()){
+            stream.print(GoBackend.getVariableNameUpperCamel(f.getName()) + " ");
+            f.getAccess().generateGo(stream);
+            stream.println();
         }
     }
 
