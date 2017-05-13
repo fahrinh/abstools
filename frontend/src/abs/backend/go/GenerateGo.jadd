@@ -627,7 +627,7 @@ aspect GenerateGo{
 //
     public void NewExp.generateGo(PrintStream stream) {
         ClassDecl decl=((UnionType)getType()).getOriginatingClass();
-        String className=GoBackend.getQualifiedString(decl);
+        String className=GoBackend.getQualifiedString(decl, true);
 
 //        if (!hasLocal()) {
 //            String strategy = null;
@@ -644,7 +644,7 @@ aspect GenerateGo{
 //                strategy = GoGeneratorHelper.generateUserSchedulingStrategy(this, scheduler);
 //            }
 //            stream.print(className + ".__ABS_createNewCOG");
-        stream.print("&"+className);
+        stream.print(className);
 //
 //            if (strategy != null)
 //                GoGeneratorHelper.generateArgs(stream, "this, new " + strategy + "(), " + dc_exp, getParams(), decl.getTypes());

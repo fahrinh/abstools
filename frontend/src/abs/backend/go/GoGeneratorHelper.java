@@ -51,7 +51,7 @@ public class GoGeneratorHelper {
     }
 
     public static void generateNewExpArgs(PrintStream stream, ClassDecl classDecl, List<PureExp> args) {
-        stream.print("{");
+        stream.print("(");
         boolean first = true;
 
         for (int i = 0; i < args.getNumChild(); i++) {
@@ -61,12 +61,12 @@ public class GoGeneratorHelper {
             if (!first)
                 stream.print(", ");
 
-            stream.print(GoBackend.getVariableNameUpperCamel(paramDecl.getName()) + ":");
+//            stream.print(GoBackend.getVariableNameUpperCamel(paramDecl.getName()) + ":");
             e.generateGo(stream);
 
             first = false;
         }
-        stream.print("}");
+        stream.print(")");
     }
 
 

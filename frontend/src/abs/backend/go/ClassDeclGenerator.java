@@ -4,9 +4,7 @@
  */
 package abs.backend.go;
 
-import abs.backend.go.GoBackend;
 import abs.frontend.ast.*;
-import abs.frontend.typechecker.InterfaceType;
 
 import java.io.PrintStream;
 import java.util.ArrayList;
@@ -27,6 +25,7 @@ public class ClassDeclGenerator {
         GoGeneratorHelper.generateHelpLine(decl, stream);
         generateClassHeader();
         generateClassBody();
+        generateClassConstructor();
     }
 
     private void generateClassBody() {
@@ -240,4 +239,66 @@ public class ClassDeclGenerator {
 //        }
     }
 
+
+//    function NewMatrix(rows, cols, int) *matrix {
+//        return &matrix{rows, cols, make([]float, rows*cols)}
+//    }
+
+    private void generateClassConstructor() {
+        stream.print("func New" + className);
+
+        stream.print("(");
+
+        boolean firstForFuncParam = true;
+        for (ParamDecl p : decl.getParams()) {
+
+            if (!firstForFuncParam) {
+                stream.print(", ");
+            }
+
+            stream.print(GoBackend.getVariableName(p.getName()) + " ");
+            p.getAccess().generateGo(stream);
+
+            firstForFuncParam = false;
+        }
+        stream.println(") *" + className + " {");
+
+
+        stream.print("return &" + className + "{");
+
+
+        boolean firstForParamDeclNewArgs = true;
+        for (ParamDecl p : decl.getParams()) {
+
+            if (!firstForParamDeclNewArgs) {
+                stream.print(", ");
+            }
+
+            stream.print(GoBackend.getVariableNameUpperCamel(p.getName()) + ": ");
+            stream.print(GoBackend.getVariableName(p.getName()));
+
+            firstForParamDeclNewArgs = false;
+        }
+
+        if (decl.getFields().hasChildren()) {
+            stream.print(", ");
+        }
+
+        boolean firstForFieldDeclNewArgs = true;
+        for (FieldDecl f : decl.getFields()) {
+            if (f.hasInitExp()) {
+                if (!firstForFieldDeclNewArgs) {
+                    stream.print(", ");
+                }
+
+                stream.print(GoBackend.getVariableNameUpperCamel(f.getName()) + ": ");
+                f.getInitExp().generateGo(stream);
+
+                firstForFieldDeclNewArgs = false;
+            }
+        }
+
+        stream.println("}");
+        stream.println("}");
+    }
 }
