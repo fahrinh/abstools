@@ -383,15 +383,23 @@ aspect GenerateGo{
     public void VarDecl.generateGo(PrintStream stream) {
         //getAccess().generateGo(stream);
         String name=GoBackend.getVariableName(getName());
-        stream.print(" "+name+" := ");
 
         if(hasInitExp()){
-        getInitExp().generateGo(stream);
+            Exp initExp = getInitExp();
+            if (initExp instanceof NullExp) {
+                stream.print("var " + name + " ");
+                getAccess().generateGo(stream);
+            } else {
+                stream.print(name + " := ");
+                getInitExp().generateGo(stream);
+            }
 //            if (getType().isIntType() && getInitExp().getType().isRatType()) {
 //                stream.print(".truncate()");
 //            }
-        }else{
-        stream.print("nil");
+        } else {
+            stream.print("var " + name + " ");
+            getAccess().generateGo(stream);
+//            stream.print("nil");
         }
         stream.println("");
 //        if (getModel().includeDebug) {
