@@ -81,8 +81,11 @@ public class GoCode {
     }
 
     public void prettyFormat() throws IOException, InterruptedException {
-        Process versionCheck = Runtime.getRuntime().exec(new String[]{"gofmt", "-s", "-w", srcDir.getAbsolutePath()});
-        versionCheck.waitFor();
+        Process goFmtProcess = Runtime.getRuntime().exec(new String[]{"gofmt", "-s", "-w", srcDir.getAbsolutePath()});
+        goFmtProcess.waitFor();
+
+        Process goImportsProcess = Runtime.getRuntime().exec(new String[]{"goimports", "-w", srcDir.getAbsolutePath()});
+        goImportsProcess.waitFor();
     }
 
     public String getFirstMainClass() {
