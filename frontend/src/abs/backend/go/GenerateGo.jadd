@@ -61,7 +61,7 @@ aspect GenerateGo{
                 stream.println("");
 
                 stream.println("func main() {");
-                block.generateGo(stream);
+                block.generateGo(stream, false, true);
                 stream.println("}");
             } finally {
                 if (stream != null)
@@ -332,11 +332,16 @@ aspect GenerateGo{
     }
 
     public void Block.generateGo(PrintStream stream) {
-        generateGo(stream, false);
+        generateGo(stream, false, false);
     }
 
     public void Block.generateGo(PrintStream stream, boolean addReturn) {
-        stream.println(" {");
+        generateGo(stream, addReturn, false);
+    }
+
+    public void Block.generateGo(PrintStream stream, boolean addReturn, boolean isMainBlock) {
+//        TODO: Maybe, someday we need this uncomment
+        if (!isMainBlock) stream.println("{");
 
         super.generateGo(stream);
 //        TODO
@@ -371,7 +376,8 @@ aspect GenerateGo{
 //
 //            stream.println("return " + GoBackendConstants.UNITVALUE + ";");
 //        }
-        stream.println("}");
+//        TODO: Maybe, someday we need this uncomment
+        if (!isMainBlock) stream.println("}");
     }
 //  TODO
     public void VarDecl.generateGo(PrintStream stream) {
@@ -451,10 +457,11 @@ aspect GenerateGo{
         getCondition().generateGo(stream);
         stream.println(" {");
         getThen().generateGo(stream);
-        stream.println("}");
         if (hasElse()) {
-            stream.println("else {");
+            stream.println("} else {");
             getElse().generateGo(stream);
+            stream.println("}");
+        } else {
             stream.println("}");
         }
     }
@@ -660,7 +667,7 @@ aspect GenerateGo{
     }
 
     public void FieldUse.generateGo(PrintStream stream) {
-        ClassDecl d = (ClassDecl) getContextDecl();
+        ModuleDecl d = (ModuleDecl) getContextDecl().getModuleDecl();
         String receiverName = GoBackend.getReceiverName(d.getName());
         stream.print(receiverName + "." + GoBackend.getVariableNameUpperCamel(getName()));
     }
