@@ -71,7 +71,7 @@ public class GoBackend extends Main {
     }
 
     public static String getGoType(TypeUse absType) {
-        return getQualifiedString(absType.getType());
+        return getQualifiedString(absType.getType(), absType);
     }
 
     public static String getQualifiedString(String s) {
@@ -83,6 +83,10 @@ public class GoBackend extends Main {
     }
 
     public static String getQualifiedString(Type absType) {
+        return getQualifiedString(absType, null);
+    }
+
+    public static String getQualifiedString(Type absType, TypeUse typeUse) {
         String res = null;
         if (absType.isDataType()) {
             DataTypeType dt = (DataTypeType) absType;
@@ -116,7 +120,12 @@ public class GoBackend extends Main {
         } else if (absType.isInterfaceType()) {
             InterfaceType it = (InterfaceType) absType;
             System.err.println(">>>INTERFACE TYPE " + getQualifiedString(it.getDecl()));
-            return getQualifiedString(it.getDecl());
+
+            ModuleDecl moduleDeclType = absType.getDecl().getModuleDecl();
+            ModuleDecl moduleDecl = typeUse.getModuleDecl();
+
+            boolean printQualified = (!moduleDecl.getName().equals(moduleDeclType.getName()));
+            return printQualified ? getQualifiedString(it.getDecl()) : getGoName(it.getDecl());
         } else if (absType.isTypeParameter()) {
             TypeParameter tp = (TypeParameter) absType;
             System.err.println(">>>TYPE " + tp.getDecl().getName());
