@@ -191,7 +191,7 @@ public class GoGeneratorHelper {
         generateMethodSig(stream, sig, async, "", "");
     }
 
-    public static void generateMethodSig(PrintStream stream, MethodSig sig, boolean async, String modifier, String prefix) {
+    public static void generateMethodSig(PrintStream stream, MethodSig sig, boolean async, String modifier, String postfix) {
         GoGeneratorHelper.generateHelpLine(sig, stream);
 
         boolean isClassDecl = sig.getContextDecl() instanceof ClassDecl;
@@ -203,17 +203,19 @@ public class GoGeneratorHelper {
         }
 
         if (async) {
-            prefix = "async_";
+            postfix = "Async";
 //            TODO
 //            stream.print(ABSFut.class.getName() + "<");
         }
 
-        if (async) {
-            stream.print(">");
-        }
-        stream.print(prefix + GoBackend.getMethodName(sig.getName()) + " ");
+//        if (async) {
+//            stream.print(">");
+//        }
+        stream.print(GoBackend.getMethodName(sig.getName()) + postfix + " ");
         GoGeneratorHelper.generateParams(stream, sig.getParams());
         stream.print(" ");
+
+        if (async) stream.print("chan ");
         sig.getReturnType().generateGo(stream);
     }
 
@@ -225,7 +227,7 @@ public class GoGeneratorHelper {
 //        stream.print("return (" + ABSFut.class.getName() + ")");
 
         generateAsyncCall(stream, "this", null, method.getContextDecl().getType(), null, sig.getParams(), sig, new List<Annotation>());
-        stream.println(";");
+//        stream.println(";");
         stream.println("}");
     }
 
@@ -243,7 +245,27 @@ public class GoGeneratorHelper {
                                           final List<ParamDecl> params,
                                           final MethodSig sig,
                                           final List<Annotation> annotations) {
-//        TODO
+        final java.util.List<Type> paramTypes = sig.getTypes();
+
+        stream.print("future := make (chan ");
+        sig.getReturnType().generateGo(stream);
+        stream.println(")");
+
+        stream.print("go func () { future <- ");
+
+        ClassDecl d = (ClassDecl) sig.getContextDecl();
+        stream.print(GoBackend.getReceiverName(d.getName()) + "." + GoBackend.getMethodName(sig.getName()));
+
+        if (args != null)
+            GoGeneratorHelper.generateArgs(stream,args, paramTypes);
+        else
+            GoGeneratorHelper.generateParamArgs(stream, params);
+
+        stream.println("}()");
+        stream.println("return future");
+
+
+//        TODO: Need Review
 //        final java.util.List<Type> paramTypes = sig.getTypes();
 //        stream.print(ABSRuntime.class.getName() + ".getCurrentRuntime().asyncCall(");
 //        String targetType = GoBackend.getQualifiedString(calleeType);
@@ -364,8 +386,7 @@ public class GoGeneratorHelper {
     }
 
     public static void generateMethodImpl(PrintStream stream, final MethodImpl m) {
-        // Async variant TODO needed in Go ?
-//        GoGeneratorHelper.generateAsyncMethod(stream, m);
+        GoGeneratorHelper.generateAsyncMethod(stream, m);
 
         // Sync variant
         generateMethodSig(stream, m.getMethodSig(), false, "", "");
