@@ -189,6 +189,8 @@ aspect GenerateGo{
         for (MethodSig s : getBodys()) {
                       // Sync
                     s.generateGo(stream, false);
+                     // Async
+                    s.generateGo(stream, true);
                     stream.println("");
         }
         stream.println("}");
