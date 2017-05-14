@@ -50,7 +50,7 @@ public class GoBackend extends Main {
     private static Map<String, String> initDataTypeMap() {
         final Map<String, String> res = new HashMap<String, String>();
         res.put("Int", "int");
-//        res.put("Rat", ABSRational.class.getName());
+        res.put("Rat", "float64");
         res.put("Bool", "bool");
         res.put("String", "string");
 //        res.put("Fut", ABSFut.class.getName());
