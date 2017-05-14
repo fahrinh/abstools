@@ -675,7 +675,7 @@ aspect GenerateGo{
     }
 
     public void FieldUse.generateGo(PrintStream stream) {
-        ModuleDecl d = (ModuleDecl) getContextDecl().getModuleDecl();
+        ClassDecl d = (ClassDecl) getContextDecl();
         String receiverName = GoBackend.getReceiverName(d.getName());
         stream.print(receiverName + "." + GoBackend.getVariableNameUpperCamel(getName()));
     }
