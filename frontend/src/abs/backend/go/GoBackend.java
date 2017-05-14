@@ -173,7 +173,8 @@ public class GoBackend extends Main {
     }
 
     public static String getInterfaceName(String name) {
-        return truncate(name + "_i");
+//        return truncate(name + "_i");
+        return truncate(name + "");
     }
 
     public static String getClassName(String name) {
@@ -222,7 +223,8 @@ public class GoBackend extends Main {
     }
 
     public static String getFunctionName(String name) {
-        return CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, truncate(escapeReservedWords(name) + "_f"));
+//        return CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, truncate(escapeReservedWords(name) + "_f"));
+        return CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, truncate(escapeReservedWords(name) + ""));
     }
 
     public static String getMethodName(String name) {
