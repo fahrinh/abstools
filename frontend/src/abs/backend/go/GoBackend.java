@@ -94,20 +94,24 @@ public class GoBackend extends Main {
             if (res != null)
                 return res;
 
-            StringBuilder sb = new StringBuilder();
-            if (dt.hasTypeArgs() && !containsUnboundedType(dt.getTypeArgs())) {
-                sb.append("<");
-                boolean first = true;
-                for (Type t : dt.getTypeArgs()) {
-                    if (first)
-                        first = false;
-                    else
-                        sb.append(',');
-                    sb.append(getQualifiedString(t));
+            if ("Fut".equals(dt.getDecl().getName())) {
+                return "chan " + getQualifiedString(dt.getTypeArg(0), typeUse);
+            } else {
+                StringBuilder sb = new StringBuilder();
+                if (dt.hasTypeArgs() && !containsUnboundedType(dt.getTypeArgs())) {
+                    sb.append("<");
+                    boolean first = true;
+                    for (Type t : dt.getTypeArgs()) {
+                        if (first)
+                            first = false;
+                        else
+                            sb.append(',');
+                        sb.append(getQualifiedString(t));
+                    }
+                    sb.append(">");
                 }
-                sb.append(">");
+                return getQualifiedString(dt.getDecl()) + sb.toString();
             }
-            return getQualifiedString(dt.getDecl()) + sb.toString();
             /*
              * if (dt.hasTypeArgs() && !containsUnboundedType(dt.getTypeArgs()))
              * {
