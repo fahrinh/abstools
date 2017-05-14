@@ -189,6 +189,7 @@ aspect GenerateGo{
         for (MethodSig s : getBodys()) {
                       // Sync
                     s.generateGo(stream, false);
+                    stream.println("");
                      // Async
                     s.generateGo(stream, true);
                     stream.println("");
@@ -577,7 +578,18 @@ aspect GenerateGo{
     }
 //
     public void AsyncCall.generateGo(PrintStream stream) {
-//        GoGeneratorHelper.generateAsyncCall(stream, this);
+        //GoGeneratorHelper.generateAsyncCall(stream, this);
+
+        PureExp callee = getCallee();
+        final List<PureExp> params = getParams();
+        if (callee instanceof ThisExp) {
+            stream.print(GoBackend.getMethodName(getMethod()) + "Async");
+            GoGeneratorHelper.generateArgs(stream,params,getMethodSig().getTypes());
+        } else {
+            callee.generateGo(stream);
+            stream.print("." + GoBackend.getMethodName(getMethod()) + "Async");
+            GoGeneratorHelper.generateArgs(stream,params,getMethodSig().getTypes());
+        }
     }
 //
     public void AwaitAsyncCall.generateGo(PrintStream stream) {
