@@ -328,6 +328,10 @@ aspect GenerateGo{
 
     public void TypeSynDecl.generateGo(PrintStream stream) {
         // generate nothing as type synonyms do not appear in the Go outout
+
+        stream.print("type " + getName() + " ");
+        getValue().generateGo(stream);
+        stream.println("");
     }
 
     public void ExceptionDecl.generateGo(PrintStream stream) {
