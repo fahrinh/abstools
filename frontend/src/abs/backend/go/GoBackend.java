@@ -132,7 +132,11 @@ public class GoBackend extends Main {
                 ModuleDecl moduleDeclType = absType.getDecl().getModuleDecl();
                 ModuleDecl moduleDecl = typeUse.getModuleDecl();
                 printQualified = (!moduleDecl.getName().equals(moduleDeclType.getName()));
-                inMainPackage = moduleDecl.hasBlock();
+                if (moduleDecl.hasBlock()) {
+                    if (moduleDecl.getBlock() == typeUse.getContextBlock()) {
+                        inMainPackage = true;
+                    }
+                }
             }
 
             return (printQualified || inMainPackage )? getQualifiedString(it.getDecl()) : getGoName(it.getDecl());
