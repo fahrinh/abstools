@@ -125,10 +125,14 @@ public class GoBackend extends Main {
             InterfaceType it = (InterfaceType) absType;
             System.err.println(">>>INTERFACE TYPE " + getQualifiedString(it.getDecl()));
 
-            ModuleDecl moduleDeclType = absType.getDecl().getModuleDecl();
-            ModuleDecl moduleDecl = typeUse.getModuleDecl();
+            boolean printQualified = true;
 
-            boolean printQualified = (!moduleDecl.getName().equals(moduleDeclType.getName()));
+            if (absType != null && typeUse != null) {
+                ModuleDecl moduleDeclType = absType.getDecl().getModuleDecl();
+                ModuleDecl moduleDecl = typeUse.getModuleDecl();
+                printQualified = (!moduleDecl.getName().equals(moduleDeclType.getName()));
+            }
+
             return printQualified ? getQualifiedString(it.getDecl()) : getGoName(it.getDecl());
         } else if (absType.isTypeParameter()) {
             TypeParameter tp = (TypeParameter) absType;
