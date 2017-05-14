@@ -626,17 +626,20 @@ aspect GenerateGo{
     }
 //
     public void GetExp.generateGo(PrintStream stream) {
-//        DataTypeType t = (DataTypeType) getPureExp().getType();
-//        // assume to be of type Fut<V>
-//        if (!t.isFutureType() || !t.hasTypeArgs())
-//            return;
-//
+        DataTypeType t = (DataTypeType) getPureExp().getType();
+        // assume to be of type Fut<V>
+        if (!t.isFutureType() || !t.hasTypeArgs())
+            return;
+
+//        // For casting
 //        Type typeArg = t.getTypeArg(0);
 //        if (!(getParent() instanceof ExpressionStmt)) {
 //            stream.print("(" + GoBackend.getQualifiedString(typeArg) + ")");
 //        }
-//        getPureExp().generateGo(stream);
-//        stream.print(".get()");
+
+        stream.print("<- ");
+        getPureExp().generateGo(stream);
+
     }
 //
     public void NewExp.generateGo(PrintStream stream) {
