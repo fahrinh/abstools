@@ -65,6 +65,17 @@ public class GoBackend extends Main {
         else
             return false;
     }
+    public static boolean isExported(ModuleDecl moduleDecl, String name) {
+        for (Map.Entry<KindedName, ResolvedName> entry : moduleDecl.getExportedNames().entrySet()) {
+            KindedName key = entry.getKey();
+            ResolvedName value = entry.getValue();
+//            stream.println("### " + key.getName() + " ### " + value.getQualifiedString());
+            if (name.equals(key.getName())) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     public static String getGoType(ConstructorArg u) {
         return getGoType(u.getTypeUse());
@@ -124,22 +135,7 @@ public class GoBackend extends Main {
         } else if (absType.isInterfaceType()) {
             InterfaceType it = (InterfaceType) absType;
             System.err.println(">>>INTERFACE TYPE " + getQualifiedString(it.getDecl()));
-
-            boolean printQualified = true;
-            boolean inMainPackage = false;
-
-            if (absType != null && typeUse != null) {
-                ModuleDecl moduleDeclType = absType.getDecl().getModuleDecl();
-                ModuleDecl moduleDecl = typeUse.getModuleDecl();
-                printQualified = (!moduleDecl.getName().equals(moduleDeclType.getName()));
-                if (moduleDecl.hasBlock()) {
-                    if (moduleDecl.getBlock() == typeUse.getContextBlock()) {
-                        inMainPackage = true;
-                    }
-                }
-            }
-
-            return (printQualified || inMainPackage )? getQualifiedString(it.getDecl()) : getGoName(it.getDecl());
+            return qualifiedPath(absType, typeUse) + getGoName(it.getDecl());
         } else if (absType.isTypeParameter()) {
             TypeParameter tp = (TypeParameter) absType;
             System.err.println(">>>TYPE " + tp.getDecl().getName());
@@ -156,6 +152,26 @@ public class GoBackend extends Main {
         }
 
         throw new RuntimeException("Type " + absType.getClass().getName() + " not yet supported by Go backend");
+    }
+
+    public static String qualifiedPath(Type absType, TypeUse typeUse) {
+        String path = "";
+        boolean printQualified = true;
+        boolean inMainPackage = false;
+
+        if (absType != null && typeUse != null) {
+            ModuleDecl moduleDeclType = absType.getDecl().getModuleDecl();
+            ModuleDecl moduleDecl = typeUse.getModuleDecl();
+            printQualified = (!moduleDecl.getName().equals(moduleDeclType.getName()));
+            if (moduleDecl.hasBlock()) {
+                if (moduleDecl.getBlock() == typeUse.getContextBlock()) {
+                    inMainPackage = true;
+                }
+            }
+        }
+        path = (printQualified || inMainPackage) ? absType.getDecl().getModuleDecl().getName().toLowerCase() + "." : "";
+
+        return path;
     }
 
     private static boolean containsUnboundedType(List<Type> typeArgs) {
@@ -191,9 +207,32 @@ public class GoBackend extends Main {
         return truncate(name + "");
     }
 
+    public static String getInterfaceName(ModuleDecl moduleDecl, String name) {
+        return getVisibilityName(moduleDecl, name);
+    }
+
     public static String getClassName(String name) {
 //        return truncate(name + "_c");
         return truncate(name + "");
+    }
+
+    public static String getClassName(ModuleDecl moduleDecl, String name) {
+        return getVisibilityName(moduleDecl, name);
+    }
+
+    public static String getNewExpName(ModuleDecl moduleDecl, String name) {
+        return (GoBackend.isExported(moduleDecl, name) ? "New" : "new") + name;
+    }
+
+    public static String getVisibilityName(ModuleDecl moduleDecl, String name) {
+        System.out.println("$$$ ModuleDecl : " + moduleDecl.getName() + " - " + name);
+        if (isExported(moduleDecl, name)) {
+            System.out.println("TRUE");
+            return CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, name);
+        } else {
+            System.out.println("FALSE");
+            return CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_CAMEL, name);
+        }
     }
 
 //    static {
@@ -239,6 +278,10 @@ public class GoBackend extends Main {
     public static String getFunctionName(String name) {
 //        return CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, truncate(escapeReservedWords(name) + "_f"));
         return CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, truncate(escapeReservedWords(name) + ""));
+    }
+
+    public static String getFunctionName(ModuleDecl moduleDecl, String name) {
+        return getVisibilityName(moduleDecl, truncate(escapeReservedWords(name) + ""));
     }
 
     public static String getMethodName(String name) {
