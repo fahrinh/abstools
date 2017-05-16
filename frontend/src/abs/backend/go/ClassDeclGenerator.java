@@ -225,7 +225,7 @@ public class ClassDeclGenerator {
     }
 
     private void generateClassHeader() {
-        stream.print("type " + className + " struct ");
+        stream.print("type " + GoBackend.getClassName(decl.getModuleDecl(), className) + " struct ");
 
 //        TODO: NEEDREVIEW
 //        stream.print("public ");
@@ -245,8 +245,9 @@ public class ClassDeclGenerator {
 //    }
 
     private void generateClassConstructor() {
-        stream.print("func New" + className);
-
+        ModuleDecl moduleDecl = decl.getModuleDecl();
+        String visibilityName = GoBackend.getVisibilityName(moduleDecl, className);
+        stream.print("func " + GoBackend.getNewExpName(moduleDecl, className));
         stream.print("(");
 
         boolean firstForFuncParam = true;
@@ -261,10 +262,10 @@ public class ClassDeclGenerator {
 
             firstForFuncParam = false;
         }
-        stream.println(") *" + className + " {");
+        stream.println(") *" + visibilityName + " {");
 
 
-        stream.print("return &" + className + "{");
+        stream.print("return &" + visibilityName + "{");
 
 
         boolean firstForParamDeclNewArgs = true;
