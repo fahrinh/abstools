@@ -81,8 +81,8 @@ public class GoBackend extends Main {
         return getGoType(u.getTypeUse());
     }
 
-    public static String getGoType(TypeUse absType) {
-        return getQualifiedString(absType.getType(), absType);
+    public static String getGoType(TypeUse typeUse) {
+        return getQualifiedString(typeUse.getType(), typeUse);
     }
 
     public static String getQualifiedString(String s) {
@@ -154,24 +154,19 @@ public class GoBackend extends Main {
         throw new RuntimeException("Type " + absType.getClass().getName() + " not yet supported by Go backend");
     }
 
-    public static String qualifiedPath(Type absType, TypeUse typeUse) {
-        String path = "";
-        boolean printQualified = true;
+    public static String qualifiedPath(ModuleDecl moduleTypeDeclared, ModuleDecl moduleTypeUsed, Block blockTypeUsed) {
+        boolean printQualified = (!moduleTypeUsed.getName().equals(moduleTypeDeclared.getName()));;
         boolean inMainPackage = false;
-
-        if (absType != null && typeUse != null) {
-            ModuleDecl moduleDeclType = absType.getDecl().getModuleDecl();
-            ModuleDecl moduleDecl = typeUse.getModuleDecl();
-            printQualified = (!moduleDecl.getName().equals(moduleDeclType.getName()));
-            if (moduleDecl.hasBlock()) {
-                if (moduleDecl.getBlock() == typeUse.getContextBlock()) {
-                    inMainPackage = true;
-                }
+        if (moduleTypeUsed.hasBlock()) {
+            if (moduleTypeUsed.getBlock() == blockTypeUsed) {
+                inMainPackage = true;
             }
         }
-        path = (printQualified || inMainPackage) ? absType.getDecl().getModuleDecl().getName().toLowerCase() + "." : "";
+        return (printQualified || inMainPackage) ? moduleTypeDeclared.getName().toLowerCase() + "." : "";
+    }
 
-        return path;
+    public static String qualifiedPath(Type type, TypeUse typeUse) {
+        return qualifiedPath(type.getDecl().getModuleDecl(), typeUse.getModuleDecl(), typeUse.getContextBlock());
     }
 
     private static boolean containsUnboundedType(List<Type> typeArgs) {
