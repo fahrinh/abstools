@@ -184,7 +184,7 @@ aspect GenerateGo{
 //  TODO
     public void InterfaceDecl.generateGo(PrintStream stream) {
         GoGeneratorHelper.generateHelpLine(this,stream);
-        stream.print("type " + GoBackend.getGoName(this) + " interface");
+        stream.print("type " + GoBackend.getInterfaceName(getModuleDecl(), getName()) + " interface");
         stream.println(" {");
         for (MethodSig s : getBodys()) {
                       // Sync
@@ -284,13 +284,13 @@ aspect GenerateGo{
 
         GoGeneratorHelper.generateHelpLine(this,stream);
 
-        String className = GoBackend.getFunctionName(getName());
+        String funcName = GoBackend.getFunctionName(getModuleDecl(), getName());
 //        stream.print("public final class " + className);
 //        stream.println(" implements " + ABSFunction.class.getName() + " {");
 //        stream.println("private " + className + "() { }");
         stream.print("func ");
 //        stream.print(" apply");
-        stream.print(" " + className);
+        stream.print(" " + funcName);
         GoGeneratorHelper.generateParams(stream,getParams());
 
         GoGeneratorHelper.generateTypeParameters(stream,this, true);
