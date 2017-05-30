@@ -265,7 +265,7 @@ public class ClassDeclGenerator {
         stream.println(") *" + visibilityName + " {");
 
 
-        stream.print("return &" + visibilityName + "{");
+        stream.print("o := &" + visibilityName + "{");
 
 
         boolean firstForParamDeclNewArgs = true;
@@ -300,6 +300,9 @@ public class ClassDeclGenerator {
         }
 
         stream.println("}");
+
+        stream.print("return o");
+
         stream.println("}");
     }
 }
