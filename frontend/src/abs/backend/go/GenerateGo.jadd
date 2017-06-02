@@ -587,7 +587,9 @@ aspect GenerateGo{
         PureExp callee = getCallee();
         final List<PureExp> params = getParams();
         if (callee instanceof ThisExp) {
-            stream.print(GoBackend.getMethodName(getMethod()) + "Async");
+            ClassDecl d = (ClassDecl) getContextDecl();
+            stream.print(GoBackend.getReceiverName(d.getName()));
+            stream.print("." + GoBackend.getMethodName(getMethod()) + "Async");
             GoGeneratorHelper.generateArgs(stream,params,getMethodSig().getTypes());
         } else {
             callee.generateGo(stream);
@@ -604,7 +606,9 @@ aspect GenerateGo{
         PureExp callee = getCallee();
         final List<PureExp> params = getParams();
         if (callee instanceof ThisExp) {
-            stream.print(GoBackend.getMethodName(getMethod()));
+            ClassDecl d = (ClassDecl) getContextDecl();
+            stream.print(GoBackend.getReceiverName(d.getName()));
+            stream.print("." + GoBackend.getMethodName(getMethod()));
             GoGeneratorHelper.generateArgs(stream,params,getMethodSig().getTypes());
         } else {
 //            stream.print(ABSRuntime.class.getName() + ".checkForNull(");
