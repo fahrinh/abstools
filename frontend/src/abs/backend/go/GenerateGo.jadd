@@ -999,12 +999,12 @@ aspect GenerateGo{
         getRight().generateGo(stream);
         stream.print(" ");
     }
-//  TODO perlu math.Mod ?
+//
     public void ModMultExp.generateGo(PrintStream stream) {
-//        getLeft().generateGo(stream);
-//        stream.print(".mod(");
-//        getRight().generateGo(stream);
-//        stream.print(")");
+        getLeft().generateGo(stream);
+        stream.print(" % ");
+        getRight().generateGo(stream);
+        stream.print(" ");
     }
 //
     public void MultMultExp.generateGo(PrintStream stream) {
